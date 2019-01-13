@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>WebWorkder Demo</title>
+    <style>
+      #input {
+        width: 0;
+        height: 0;
+        display: inline-block;
+        overflow: hidden;
+      }
+
+      #input + label {
+        display: inline-block;
+        background: #f3f3f3;
+        padding: 3px;
+        border-radius: 2px;
+      }
+
+      #input:focus + label {
+        outline: 1px solid teal;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <input type="file" accept="image/*" id="input" />
+      <label for="input">Choose File</label>
+    </div>
+
+    <canvas id="preview"></canvas>
+
+    <script charset="utf-8">
+      const $input = document.getElementById('input');
+      // const fileReader = new FileReader();
+      // const image = new Image();
+
+      const $preview = document.getElementById('preview');
+      const ctx = $preview.getContext('2d');
+
+      const worker = new Worker('worker.js');
+
+      function applyFilter() {
+        const imageData = ctx.getImageData(0, 0, $preview.width, $preview.height);
+
+        worker.postMessage(
+          imageData,
+          // transform the pointer to worker instead of copy data
+          [imageData.data.buffer]
+        );
+
+        worker.addEventListener('message', (data) => {
+          const imageData = data.data;
+          ctx.putImageData(imageData, 0, 0);
+        })
+
+      }
+
+      // image.addEventListener('load', (e) => {
+      //   // document.body.appendChild(image);
+      //   $preview.width = image.width;
+      //   $preview.height = image.height;
+      //   ctx.drawImage(image, 0, 0);
+      //   applyFilter();
+      // })
+
+      // fileReader.addEventListener('load', (e) => {
+      //   const base64 = e.target.result;
+      //   image.src = base64;
+      // })
+
+      $input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+
+        // promise based creating image with dataURL
+        createImageBitmap(file)
+          .then((bitmap) => {
+            $preview.width = bitmap.width;
+            $preview.height = bitmap.height;
+            ctx.drawImage(bitmap, 0, 0);
+            applyFilter();
+          })
+
+        // fileReader.readAsDataURL(file);
+      });
+
+    </script>
+  </body>
+</html>

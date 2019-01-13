@@ -1,0 +1,16 @@
+{
+  "name": "webworker-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "LIU CHENG <kimochg@outlook.com>",
+  "license": "ISC",
+  "dependencies": {
+    "serve": "^10.1.1"
+  }
+}
